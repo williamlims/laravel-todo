@@ -10,7 +10,7 @@
         <div class="shadow-lg p-3 bg-dark text-white rounded p-5" style="width: 850px; min-height: 300px;">
             <h1>Tarefas</h1>
             <small class="text-info">{{ $todos->count() }} ativas</small>
-            <form action="/todos" method="post" class="mt-3">
+            <form action="/todos" method="post" class="mt-3" >
                 @csrf
                 <div class="input-group">
                     <div class="input-group-text bg-white p-0">
