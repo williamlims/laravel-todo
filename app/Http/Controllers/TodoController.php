@@ -6,6 +6,7 @@ use App\Models\Todo;
 use App\Services\TodoService;
 use App\Repositories\TodoRepository;
 use App\Http\Requests\StoreTodoRequest;
+use App\Http\Requests\UpdateTodoRequest;
 
 class TodoController extends Controller
 {
@@ -82,6 +83,45 @@ class TodoController extends Controller
             $response['success'] ? 'success' : 'error',
             $response['message']
         );
+    }
+
+    public function edit(Todo $todo)
+    {
+        $user = auth()->user();
+
+        $todo = $this->repository->find($todo->id);
+
+        if($todo->user_id == $user->id)
+        {
+            return view('edit', compact('user', 'todo'));    
+        } 
+        else {
+            abort(404);
+        }
+    }
+
+    public function update(UpdateTodoRequest $request, Todo $todo)
+    {
+        //$user = auth()->user();
+
+        $attributes = $request->only([
+            'title',
+            'color'
+        ]);
+
+        //$attributes['user_id'] = $user->id;
+
+        //if($user->id == $attributes->user_id)
+        //{
+            $response = $this->service->update($attributes, $todo->id);
+        //}
+        
+        if (!$response['success']) {
+            return redirect('/todos/$todo->id/edit')->with('error', $response['message']);
+        }
+
+        return redirect('/dashboard')->with('success', $response['message']);
+        
     }
 
     /**

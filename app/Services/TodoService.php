@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\Todo;
 use Illuminate\Support\Facades\DB;
 use App\Repositories\TodoRepository;
 
@@ -41,6 +42,28 @@ class TodoService
         return [
             'success' => true,
             'message' => 'TODO criado com sucesso',
+            'data' => $todo
+        ];
+    }
+
+    public function update(array $attributtes, int $todo_id): array
+    {
+        DB::beginTransaction();
+        try {
+            $todo = $this->repository->update($attributtes, $todo_id);
+        } catch (\Throwable $th) {
+            DB::rollback();
+            logger()->error($th);
+            return [
+                'success' => false,
+                'message' => 'Erro ao atualizar TODO'
+            ];
+        }
+
+        DB::commit();
+        return [
+            'success' => true,
+            'message' => 'TODO atualizado com sucesso',
             'data' => $todo
         ];
     }
